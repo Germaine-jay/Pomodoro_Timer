@@ -5,91 +5,94 @@ using System.Linq;
 using System.Text;
 using System.Timers;
 using System.Threading;
+using System.Globalization;
 
 namespace pomodotimer
 {
     internal class Program
     {
 
-        public static int completedSession;
-        public static DateTime startTime = DateTime.Now;
+        private static int completedSession;
+        private static DateTime startTime = DateTime.Now;
 
         static Program()
         {
-            Console.WriteLine("\n");
-            Console.WriteLine($"your start time is {startTime}");
+            Console.Write("Enter 'q' to exit: ");
+
+            Console.WriteLine("your start time is {0}",startTime);
         }
 
         static void Main(string[] args)
         {
+
             Console.Write("Enter break duration: ");
             var breakDuration = int.Parse(Console.ReadLine());
 
             Console.Write("Enter working duration: ");
             var workDuration = int.Parse(Console.ReadLine());
 
-            Program.pomodoroTimer(workDuration, breakDuration);
+            Program.TaskTimer(workDuration, breakDuration);
             Program.BreakSession(breakDuration);
            
         }
-        public static void BreakSession(int duration)
+        static void BreakSession(int duration)
         {
-            var braketimeDuration = duration * 1000;
+            var brakeTimeDuration = duration * 1000;
             Stopwatch breaksession = new Stopwatch();
             breaksession.Start();
-            Thread.Sleep(braketimeDuration);
+            Thread.Sleep(brakeTimeDuration);
             breaksession.Stop();
         }
 
-        public static int pomodoroTimer(int numberOfSessions, int breakDuration)
+        static int TaskTimer(int workDuration, int breakDuration)
         {
 
             int i = 1;
-            while(i <= numberOfSessions)
+            int numberOfSessions = 0;
+
+            while (true)
             {
+
+                int workingTime = workDuration * 10000;
 
                 Stopwatch session = new Stopwatch();
                 session.Start();
-                Thread.Sleep(20000);
+                Thread.Sleep(workingTime);
                 session.Stop();
-                completedSession++;
-
+                Console.Beep();
+                completedSession++;                
                 i++;
+
                 if (numberOfSessions > 1)
                 {
-
-                    if(completedSession > 1)
+                    if (completedSession > 1)
                     {
-                        Console.WriteLine($"Great, You just completed another session count:({completedSession})\n");
-                        Console.WriteLine("Take a break\n");
+                        Console.WriteLine("Great, You just completed another session count:{0} \n Take a break", completedSession);
                     }
 
-                    else if(completedSession == 1)
+                    else if (completedSession == 1)
                     {
                         Console.WriteLine("\n");
-                        Console.WriteLine($"You just completed your first session\n");
-                        Console.WriteLine("you can take a break now\n");
+                        Console.WriteLine("You just completed your first session\n You can take a break now");
                     }
-                    
+
                     Program.BreakSession(breakDuration);
                 }
 
                 else if (i == numberOfSessions)
                 {
-                    Console.WriteLine(" Total session completed");
+                    Console.WriteLine("Total session completed");
                 }
+
+                TimeSpan SessionTimeSpan = session.Elapsed;
+                string timeElapsed = String.Format("{0:00}:{1:00}:{2:00}", SessionTimeSpan.Hours, SessionTimeSpan.Minutes, SessionTimeSpan.Seconds);
+
+                Console.WriteLine("\nAwesome, you just completed {0} sessions in {1}", completedSession, timeElapsed);
+                Console.WriteLine("Current time-{0}", startTime);
+
+                return completedSession;
                 
-                TimeSpan timeSpan = session.Elapsed;
-                string timeElapsed = String.Format("{0:00}:{1:00}:{2:00}", timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds);
-
-                Console.WriteLine($"\n Awesome, you just completed {completedSession} session in {timeElapsed}");
-                Console.WriteLine($"Current time- {startTime}");
-
             }
-
-            return completedSession;
         }
-
-
     }
 }
