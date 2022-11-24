@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Timers;
 using System.Threading;
-using System.Globalization;
+
 
 namespace pomodotimer
 {
@@ -31,8 +29,29 @@ namespace pomodotimer
             Console.Write("Enter working duration: ");
             var workDuration = int.Parse(Console.ReadLine());
 
-            Program.TaskTimer(workDuration, breakDuration);
-            Program.BreakSession(breakDuration);
+            if(breakDuration > workDuration)
+            {
+                throw new InvalidOperationException("BREAK DURATION MUST NOT EXCEED WORK DURATION");
+            }
+            if(workDuration <= 0 || breakDuration <=0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(workDuration), "INPUT MUST BE GREATER THAN 0");
+            }
+            if(int.TryParse(breakDuration.ToString(), out _)==false)
+            {
+                throw new FormatException("YOU MUST INPUT A NUMBER");
+
+            }if(breakDuration > 30 || workDuration > 30)
+            {
+                throw new IndexOutOfRangeException("INPUT MUST NOT BE GREATER THAN 30");
+            }
+            else
+            {
+                Program.TaskTimer(workDuration, breakDuration);
+                Program.BreakSession(breakDuration);
+            }
+
+
            
         }
         static void BreakSession(int duration)
@@ -90,8 +109,20 @@ namespace pomodotimer
                 Console.WriteLine("\nAwesome, you just completed {0} sessions in {1}", completedSession, timeElapsed);
                 Console.WriteLine("Current time-{0}", startTime);
 
-                return completedSession;
-                
+
+                var quit = Console.ReadLine();              
+                switch (quit)
+                {
+                case "y": Console.WriteLine("yea");
+                        continue;
+                case "n": Console.WriteLine("no");
+                        break;
+                    
+                }
+
+
+
+                //return completedSession;
             }
         }
     }
